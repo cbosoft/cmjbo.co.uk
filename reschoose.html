@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Reschoose</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+    <script type="text/javascript" src="scripts/reschoose.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body onload="update_labels();">
+
+    <div class="centre">
+
+      <h1>Resistor combination chooser</h1>
+
+      <p>Given a list of resistors, and a desired ratio of resistances, gives a
+      list of suitables choices of resistors.</p>
+
+      <div class="container">
+
+        <h3>What are you designing?</h3>
+        <input type="radio" name="situ" id="situationvdiv" onclick="update_ratio_label();" checked="true">Voltage divider<br>
+        <input type="radio" name="situ" id="situationinv" onclick="update_ratio_label();">Inverting op-amp<br>
+        <input type="radio" name="situ" id="situationnoninv" onclick="update_ratio_label();">Non-inverting op-amp<br>
+        <input type="radio" name="situ" id="situationother" onclick="update_ratio_label();">Other
+
+        <br />
+
+        <h3>Which resistor set?</h3>
+        <p>Resistor values were standardised in the 1950s in the 
+        <a href="https://en.wikipedia.org/wiki/E_series_of_preferred_numbers">"E series of preferred numbers"</a>. 
+        These values are logarithmically spaced in differing amounts. The <b>E12</b> series has 12 values per decade, 
+        the <b>E6</b> has 6 per decade.</p>
+        <p id="resex"></p>
+        <input type="radio" name="resistorset" id="E24" onclick="update_res_ex();">E24<br>
+        <input type="radio" name="resistorset" id="E12" onclick="update_res_ex();" checked="true">E12<br>
+        <input type="radio" name="resistorset" id="E6" onclick="update_res_ex();">E6<br>
+        <input type="radio" name="resistorset" id="None" onclick="update_res_ex();">None<br>
+        Additional resistors: <input id="extra">
+
+        <br />
+
+        <h3>What is the desired ratio?</h3>
+        <p id="ratioexpl"></p>
+        <input name="ratio" id="ratio" value="1.0" class="textinput">
+
+        <br />
+
+        <h3>How many results?</h3>
+        <input name="number" id="number" value="10" class="textinput">
+
+        <br /><br />
+
+        <div class="centretxt">
+          <button onclick="reschoose()">Calculate</button>
+        </div>
+
+        <br /><br />
+
+        <div id="results"></div>
+
+      </div>
+
+
+      <div class="footer" style="text-align: center;">
+        <p>
+        <a href="index.html">home</a>&nbsp<a href="https://github.com/cbosoft">github</a>
+        </p>
+      </div>
+
+    </div>
+
+
+  </body>
+</html>
