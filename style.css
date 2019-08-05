@@ -68,9 +68,12 @@ a:hover {
 
 .footer {
   width: 100%;
-  margin-top: 20px;
   padding: 5px;
   background-color: #e0e0e0;
+  position: fixed;
+  bottom: 0;
+  height: 50px;
+  left: 0;
 }
 
 
