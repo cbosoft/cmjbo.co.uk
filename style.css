@@ -45,6 +45,39 @@ label {
   font-weight: bold;
 }
 
+a {
+  color: #333;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+a:visited {
+  color: #557;
+}
+
+a:hover {
+  color: #777;
+}
+
+.separator {
+  display: inline-block;
+  margin-left: 10px;
+  margin-right: 10px;
+  color: #bbb;
+}
+
+.footer {
+  width: 100%;
+  margin-top: 20px;
+  padding: 5px;
+  background-color: #e0e0e0;
+}
+
+
+
+
+
+/* Mobile styling */
 @media only screen and (max-width: 600px) {
   .centre {
     width: 90%;
