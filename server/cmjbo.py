@@ -1,5 +1,6 @@
 #!/bin/python3
 from http.server import HTTPServer, BaseHTTPRequestHandler
+impport os
 
 class Handler(BaseHTTPRequestHandler):
 
@@ -20,4 +21,8 @@ class Handler(BaseHTTPRequestHandler):
 
 
 httpd = HTTPServer( ('', 80), Handler)
-httpd.serve_forever()
+
+if os.fork() == 0:
+    httpd.serve_forever()
+else:
+    print("Server forked to background.")
