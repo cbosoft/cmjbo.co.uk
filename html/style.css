@@ -63,13 +63,13 @@ a:hover {
   display: inline-block;
   margin-left: 10px;
   margin-right: 10px;
-  color: #bbb;
+  color: #999999;
 }
 
 .footer {
   width: 100%;
   padding: 5px;
-  background-color: #e0e0e0;
+  background-color: #afafaf;
   position: fixed;
   bottom: 0;
   height: 50px;
