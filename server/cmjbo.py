@@ -54,14 +54,22 @@ class Cache:
         self._cache = dict()
 
     def get_file(self, path):
-        if path not in self._cache:
+        if not self.contains(path):
             self.add_file(path)
-            print(cache.get_status())
         return self._cache[path]
 
+    def contains(self, key):
+        return key in self._cache
+
     def add_file(self, path):
-        cached_file = CachedFile(path)
-        self._cache[path] = cached_file
+        if not os.path.isfile(path):
+            self._cache[path] = None
+        else:
+            cached_file = CachedFile(path)
+            self._cache[path] = cached_file
+
+    def add_alias(self, alias, path):
+        self._cache[alias] = self._cache[path]
 
     def get_status(self):
         size = sys.getsizeof(self)
@@ -74,18 +82,20 @@ class Cache:
         return total
 
 cache = Cache()
+cache.add_file('../html/index.html')
+cache.add_alias('../html/', '../html/index.html')
 
 
 class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
 
-        requested_file = os.path.join(SERVER_ROOT, self.path[1:])
+        requested_file = cache.get_file(os.path.join(SERVER_ROOT, self.path[1:]))
 
-        if os.path.isfile(requested_file):
-            self.serve_file(requested_file)
-        else:
-            self.file_not_found()
+        if requested_file == None:
+            return self.file_not_found()
+
+        self.serve_file(requested_file)
 
 
     def do_POST(self):
@@ -102,11 +112,9 @@ class Handler(BaseHTTPRequestHandler):
                 ]))
 
 
-    def serve_file(self, file_path):
+    def serve_file(self, cached_file):
 
-        cached_file = cache.get_file(file_path)
-
-        self.respond(400, 
+        self.respond(200, 
                 cached_file.get_mimetype(),
                 cached_file.get_contents())
 
