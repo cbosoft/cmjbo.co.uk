@@ -1,6 +1,6 @@
 #!/bin/python3
 from http.server import HTTPServer, BaseHTTPRequestHandler
-impport os
+import os
 
 class Handler(BaseHTTPRequestHandler):
 
