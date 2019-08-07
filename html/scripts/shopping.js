@@ -1,3 +1,5 @@
+var data = null;
+
 function getCookie(cname) {
   var name = cname + "=";
   var decodedCookie = decodeURIComponent(document.cookie);
@@ -30,45 +32,40 @@ function setCookie(cname, cvalue, exdays) {
 
 
 
-function isLoggedIn()
+function hasMenu()
 {
-  return getCookie("logged") == "in";
+  var v = getCookie("menukey")
+  return ((getCookie("menukey") != "no") && (getCookie("menukey") != ""));
 }
 
 
 function render(state)
 {
+  console.log(state);
   var root = document.getElementById("root");
 
   root.innerHTML = "";
 
-  if (!isLoggedIn()) {
+  root.innerHTML += "<div>";
 
-    root.innerHTML += "<div>";
-    root.innerHTML += "<form>";
+  root.innerHTML += "<label for=\"menukey\"><b>Menu Key:</b></label>";
+  root.innerHTML += "<input id=\"menukey\" type=\"text\" placeholder=\"menu key\">";
 
-    root.innerHTML += "<label for=\"uname\"><b>Username</b></label>";
-    root.innerHTML += "<input id=\"uname\" type=\"text\" placeholder=\"Username\" name=\"uname\" required>";
+  root.innerHTML += "<button onclick=\"loadMenu();\">Load Menu</button>";
 
-    root.innerHTML += "<label for=\"psw\"><b>Password</b></label>";
-    root.innerHTML += "<input id=\"psw\" type=\"password\" placeholder=\"Password\" name=\"psw\" required>";
+  root.innerHTML += "</div>";
 
-    root.innerHTML += "<button type=\"submit\" onclick=\"login();\">Login</button>";
-
-    root.innerHTML += "</form>";
-    root.innerHTML += "</div>";
-
+  if (!hasMenu()) {
+    console.log("No \"menukey\" cookie.");
     return;
-
   }
   else {
-    root.innerHTML += "<div>";
-    root.innerHTML += "<form>";
-
-    root.innerHTML += "<button type=\"submit\" onclick=\"logout();\">Logout</button>";
-
-    root.innerHTML += "</form>";
-    root.innerHTML += "</div>";
+    if (state == 0) {
+      var req = new XMLHttpRequest();
+      req.addEventListener("load", loadCallback);
+      req.open("POST", "/shopping_api");
+      req.send(JSON.stringify({menukey: getCookie("menukey")}))
+    }
   }
 
   root.innerHTML += "<div>";
@@ -76,6 +73,22 @@ function render(state)
   root.innerHTML += "<button onclick=\"showList();\">Shopping List</button> <span class=\"separator\">|</span>";
   root.innerHTML += "<button onclick=\"showSortedList();\">Sorted List</button>";
   root.innerHTML += "</div>";
+  root.innerHTML += "<br />";
+
+  console.log(data);
+  if (data != null) {
+    for (var i = 0; i < data.menu.length; i++) {
+      console.log(data.menu[i]);
+      root.innerHTML += "<input type=\"text\" placeholder=\"meal\" id=\"meal_" + i + "\" value=\"" + data.menu[i] + "\"><button onclick=\"remItem("+i+");\">x</button><br />"
+    }
+  }
+
+  if (state == 1) {
+    root.innerHTML += "<div>";
+    root.innerHTML += "<input type=\"text\" placeholder=\"meal\" id=\"meal\"><button onclick=\"addItem();\">+</button>"
+    root.innerHTML += "</div>";
+  }
+
 
 }
 
@@ -94,29 +107,43 @@ function showSortedList()
   render(3);
 }
 
-function loginCallback(repl)
+function loadCallback()
 {
-  if (repl != "aye")
-    return;
+  // "this" is the request object
+  var rec = JSON.parse(this.responseText);
+
+  if (rec.reply == "yes") {
+    console.log("Menu is in database.");
+    data = rec.data;
+  }
+  else {
+    console.log("Menu is new." + rec.menukey);
+    data = JSON.parse('{"menu": ["macaroni and cheese", "mince and potatoes", "pasta bake"], "shoppinglist": [], "sorted_list" : []}');
+  }
   
-  setCookie("logged", "in", 7);
+  setCookie("menukey", rec.menukey, 0);
   render(1);
 }
 
-function login()
+function loadMenu()
 {
-  var uname = document.getElementById("uname").value;
-  var psw = document.getElementById("psw").value;
+  var menu_key = document.getElementById("menukey").value;
 
-  console.log(uname);
-  console.log(psw);
-
-  // TODO XHR request to server to check credentials
-  loginCallback("aye");
+  var req = new XMLHttpRequest();
+  req.addEventListener("load", loadCallback);
+  req.open("POST", "/shopping_api");
+  req.send(JSON.stringify({menukey: menu_key}))
 }
 
-function logout()
+function addItem()
 {
-  setCookie("logged", "out", 0);
-  render(0);
+  var meal = document.getElementById("meal").value;
+  data.menu.push(meal);
+  render(1);
+}
+
+function remItem(i)
+{
+  data.menu.splice(i, 1);
+  render(1);
 }
