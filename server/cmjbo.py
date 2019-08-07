@@ -152,6 +152,10 @@ class Handler(BaseHTTPRequestHandler):
                             (self.client_address[0],
                              self.log_date_time_string(),
                              format%args))
+        print("%s - - [%s] %s" %
+                            (self.client_address[0],
+                             self.log_date_time_string(),
+                             format%args))
         log_file.close()
 
 
