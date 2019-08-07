@@ -1,6 +1,7 @@
 #!/bin/python3
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import os
+import json
 import time
 import sys
 
@@ -85,6 +86,14 @@ cache = Cache()
 cache.add_file('../html/index.html')
 cache.add_alias('../html/', '../html/index.html')
 
+def shopping_api(data):
+    reply = json.dumps({'reply': 'no', 'menukey': data['menukey']})
+    print(reply)
+    return reply
+
+
+apis = {'/shopping_api': shopping_api}
+
 
 class Handler(BaseHTTPRequestHandler):
 
@@ -99,7 +108,13 @@ class Handler(BaseHTTPRequestHandler):
 
 
     def do_POST(self):
-        pass
+        l = int(self.headers['Content-length'])
+        data = json.loads(self.rfile.read(l).decode('utf-8'))
+
+        if self.path in apis:
+            self.respond(200, 'application/json', apis[self.path](data))
+        else:
+            return self.file_not_found()
 
 
     def file_not_found(self):
@@ -131,7 +146,7 @@ class Handler(BaseHTTPRequestHandler):
 
 httpd = HTTPServer( ('', 80), Handler)
 
-if os.fork() == 0:
+if True: #os.fork() == 0:
     httpd.serve_forever()
 else:
     print("Server forked to background.")
