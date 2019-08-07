@@ -143,6 +143,18 @@ class Handler(BaseHTTPRequestHandler):
 
         self.wfile.write(data)
 
+    def log_message(self, format, *args):
+        try:
+            log_file = open('log.txt', 'a')
+        except:
+            log_file = open('log.txt', 'w')
+        log_file.write("%s - - [%s] %s\n" %
+                            (self.client_address[0],
+                             self.log_date_time_string(),
+                             format%args))
+        log_file.close()
+
+
 
 httpd = HTTPServer( ('', 80), Handler)
 
