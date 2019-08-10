@@ -131,7 +131,7 @@ function loadMenu()
 
   var req = new XMLHttpRequest();
   req.addEventListener("load", loadCallback);
-  req.open("POST", "/shopping_api");
+  req.open("POST", "/shopping_list");
   req.send(JSON.stringify({menukey: menu_key}))
 }
 
