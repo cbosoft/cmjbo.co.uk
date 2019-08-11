@@ -1,9 +1,17 @@
 * {
-  font-family: sans-serif;
+  font-family: "Red Hat Text", sans-serif;
 }
 
 textarea {
   resize: none;
+}
+
+.quote {
+  font-family: "PLayfair Display", serif;
+}
+
+code {
+  font-family: "Inconsolata", monospace;
 }
 
 .textinput {
@@ -12,7 +20,7 @@ textarea {
 
 .centre {
   margin: auto;
-  width: 70%;
+  width: 600px;
 }
 
 .centretxt {
