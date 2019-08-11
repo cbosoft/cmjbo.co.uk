@@ -68,7 +68,7 @@ class CachedFile:
         '''
 
         if self.needs_update():
-            pass # TODO warning
+            print(f"Warning! Overwriting newer file {self.path}.")
 
         self.contents = contents
 
@@ -141,7 +141,7 @@ class Cache(dict):
         if path in self:
             self[alias] = self[path]
         else:
-            pass # TODO warn
+            print(f"Warning! Path {path} is not in cache. Alias not made.")
 
 
     def get_status(self):
