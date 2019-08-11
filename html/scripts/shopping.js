@@ -60,10 +60,10 @@ function render(state)
     return;
   }
   else {
-    if (state == 0) {
+    if (state == "init") {
       var req = new XMLHttpRequest();
       req.addEventListener("load", loadCallback);
-      req.open("POST", "/shopping_api");
+      req.open("POST", "/shopping_list");
       req.send(JSON.stringify({menukey: getCookie("menukey")}))
     }
   }
@@ -75,18 +75,20 @@ function render(state)
   root.innerHTML += "</div>";
   root.innerHTML += "<br />";
 
-  console.log(data);
-  if (data != null) {
-    for (var i = 0; i < data.menu.length; i++) {
-      console.log(data.menu[i]);
-      root.innerHTML += "<input type=\"text\" placeholder=\"meal\" id=\"meal_" + i + "\" value=\"" + data.menu[i] + "\"><button onclick=\"remItem("+i+");\">x</button><br />"
+  if (state == "menu") {
+    if (data != null) {
+      for (var i = 0; i < data.menu.length; i++) {
+        console.log(data.menu[i]);
+        root.innerHTML += "<input type=\"text\" placeholder=\"meal\" id=\"meal_" + i + "\" value=\"" + data.menu[i] + "\"><button onclick=\"remItem("+i+");\">x</button><br />"
+      }
     }
-  }
-
-  if (state == 1) {
     root.innerHTML += "<div>";
     root.innerHTML += "<input type=\"text\" placeholder=\"meal\" id=\"meal\"><button onclick=\"addItem();\">+</button>"
     root.innerHTML += "</div>";
+  }
+  else if (state == "list") {
+  }
+  else if (state == "sorted") {
   }
 
 
@@ -94,36 +96,37 @@ function render(state)
 
 function showMenu()
 {
-  render(1);
+  render("menu");
 }
 
 function showList()
 {
-  render(2);
+  render("list");
 }
 
 function showSortedList()
 {
-  render(3);
+  render("sorted");
 }
+
+
+
 
 function loadCallback()
 {
   // "this" is the request object
   var rec = JSON.parse(this.responseText);
 
-  if (rec.reply == "yes") {
-    console.log("Menu is in database.");
-    data = rec.data;
-  }
-  else {
-    console.log("Menu is new." + rec.menukey);
-    data = JSON.parse('{"menu": ["macaroni and cheese", "mince and potatoes", "pasta bake"], "shoppinglist": [], "sorted_list" : []}');
-  }
-  
+  data = rec;
+
+  console.log(data);
+
   setCookie("menukey", rec.menukey, 0);
-  render(1);
+  render(data.looking_for);
 }
+
+
+
 
 function loadMenu()
 {
@@ -132,18 +135,51 @@ function loadMenu()
   var req = new XMLHttpRequest();
   req.addEventListener("load", loadCallback);
   req.open("POST", "/shopping_list");
-  req.send(JSON.stringify({menukey: menu_key}))
+  req.send(JSON.stringify({menukey: menu_key, looking_for: "menu"}));
 }
+
+
+
+
+function askServer(looking_for)
+{
+  var req = new XMLHttpRequest();
+  req.addEventListener("load", loadCallback);
+  req.open("POST", "/shopping_list");
+  data = updateData();
+  data.looking_for = looking_for;
+  req.send(JSON.stringify(data));
+}
+
+
+
+
+function tellServer()
+{
+  var req = new XMLHttpRequest();
+  req.open("POST", "/shopping_list");
+  //data = updateData();
+  data.looking_for = "nothing";
+  req.send(JSON.stringify(data));
+}
+
+
+
 
 function addItem()
 {
   var meal = document.getElementById("meal").value;
   data.menu.push(meal);
-  render(1);
+  tellServer();
+  render("menu");
 }
+
+
+
 
 function remItem(i)
 {
   data.menu.splice(i, 1);
-  render(1);
+  tellServer();
+  render("menu");
 }
