@@ -8,8 +8,11 @@ the aisles that will be needed in the shop.
 
 import json
 from database import Database
+from measurement import Measurement
 
 database = Database('shopping_lists.json')
+
+# TODO change to RecipeBook object with fuzzy search
 recipes = Database('recipes.json')
 
 
@@ -18,7 +21,24 @@ def get_sorted_list(shopping_list):
 
 
 def get_shopping_list(menu):
-    return []
+    ingredients = dict()
+    for meal in menu:
+
+        try:
+            meal_ingredients = recipes[meal]
+        except KeyError:
+            continue # TODO deal with lack of recipe in recipe book
+
+        for meal_ingredient, amount in meal_ingredients:
+            if meal_ingredient in ingredients:
+                ingredients[meal_ingredient] += Measurement(amount)
+            else:
+                ingredients[meal_ingredient] = Measurement(amount)
+
+    ingredient_list = list()
+    for ingredient, amount in ingredients:
+        ingredient_list.append([ingredient, f'{amount.value} {amount.unit}'])
+    return ingredient_list
 
 
 def shopping_process(data):
